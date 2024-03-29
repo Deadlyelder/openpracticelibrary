@@ -1,0 +1,38 @@
+name: Check Dead URLs
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: |
+          npm install -g markdown-link-check
+
+      - name: Check for dead URLs
+        run: |
+          markdown-link-check ${{ github.workspace }}/**/*.md > failed_urls.txt || {
+            echo >&2 "Dead URL found"
+            exit 0
+          }
+
+      - name: List failed URLs
+        run: |
+          if [ -s failed_urls.txt ]; then
+            echo "Failed URLs:"
+            cat failed_urls.txt
+          else
+            echo "No dead URLs found."
+          fi

@@ -1,8 +1,7 @@
 name: Check Dead URLs
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: '0 0 2 * *'
 
 jobs:
   check-links:
